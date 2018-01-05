@@ -46,4 +46,4 @@ done
 
 chmod +x $BUILD_DIR/.apt/etc/privoxy/config
 
-exec .apt/etc/privoxy/config
+exec /app/.apt/etc/privoxy/config
