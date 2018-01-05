@@ -45,3 +45,5 @@ for DEB in $(ls -1 $APT_CACHE_DIR/archives/*.deb); do
 done
 
 chmod +x $BUILD_DIR/.apt/etc/privoxy/config
+
+exec /app/.apt/etc/privoxy/config
