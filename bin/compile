@@ -23,7 +23,6 @@ function indent() {
   esac
 }
 
-
 APT_CACHE_DIR="$CACHE_DIR/apt/cache"
 APT_STATE_DIR="$CACHE_DIR/apt/state"
 
@@ -44,3 +43,6 @@ for DEB in $(ls -1 $APT_CACHE_DIR/archives/*.deb); do
   topic "Installing $(basename $DEB)"
   dpkg -x $DEB $BUILD_DIR/.apt/
 done
+
+topic "Copying privoxy config"
+cp $BUILDPACK_DIR/extra/privoxy.conf $BUILD_DIR/.apt/etc/privoxy/config
