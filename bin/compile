@@ -52,6 +52,6 @@ cp $BUILDPACK_DIR/extra/config $BUILD_DIR/.apt/etc/privoxy/
 topic "installing runner"
 # cp $BUILDPACK_DIR/extra/privoxy.sh $BUILD_DIR/.profile.d/
 # chmod +x $BUILD_DIR/.profile.d/privoxy.sh
-# cp $BUILDPACK_DIR/extra/run-privoxy.sh $BUILD_DIR/.profile.d/
-# chmod +x $BUILD_DIR/.profile.d/run-privoxy.sh
+cp $BUILDPACK_DIR/extra/run-privoxy.sh $BUILD_DIR/.profile.d/
+chmod +x $BUILD_DIR/.profile.d/run-privoxy.sh
 topic "privoxy package installed"
