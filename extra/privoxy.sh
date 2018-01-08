@@ -26,7 +26,7 @@ PIDFILE=/var/run/$NAME.pid
 CONFIGFILE=/app/.apt/etc/privoxy/config
 DAEMON_ARGS="--pidfile $PIDFILE --user $OWNER $CONFIGFILE"
 SCRIPTNAME=/etc/init.d/$NAME
-LOGDIR=/var/log/privoxy
+LOGDIR=/app/.apt/var/log/privoxy
 DEFAULTSFILE=/etc/default/$NAME
 
 # Exit if the package is not installed

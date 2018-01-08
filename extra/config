@@ -346,7 +346,7 @@ confdir /app/.apt/etc/privoxy
 #
 #      No trailing "/", please.
 #
-logdir /var/log/privoxy
+logdir /app/.apt/var/log/privoxy
 #
 #  2.5. actionsfile
 #  =================
