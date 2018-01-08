@@ -11,6 +11,10 @@ function topic() {
   echo "-----> $*"
 }
 
+function indent() {
+  sed -u 's/^/       /'
+}
+
 APT_CACHE_DIR="$CACHE_DIR/apt/cache"
 APT_STATE_DIR="$CACHE_DIR/apt/state"
 
