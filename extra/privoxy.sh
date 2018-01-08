@@ -23,7 +23,6 @@ DESC="filtering proxy server"
 NAME=privoxy
 DAEMON=/app/.apt/usr/sbin/$NAME
 PIDFILE=/var/run/$NAME.pid
-OWNER=privoxy
 CONFIGFILE=/app/.apt/etc/privoxy/config
 DAEMON_ARGS="--pidfile $PIDFILE --user $OWNER $CONFIGFILE"
 SCRIPTNAME=/etc/init.d/$NAME
@@ -39,7 +38,6 @@ DEFAULTSFILE=/etc/default/$NAME
 # Create log directory if it does not exist
 if [ ! -d "$LOGDIR" ]; then
     mkdir -m 750 $LOGDIR
-    chown $OWNER:adm $LOGDIR
 fi
 
 # Define LSB log_* functions.
