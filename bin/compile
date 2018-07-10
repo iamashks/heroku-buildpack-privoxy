@@ -31,7 +31,7 @@ apt-get $APT_OPTIONS update | indent
 apt-get $APT_OPTIONS -y --force-yes -d install --reinstall --no-install-recommends privoxy | indent
 
 topic "Installing privoxy"
-dpkg -x privoxy_3.0.24-1_amd64.deb $BUILD_DIR/.apt/
+dpkg -x $APT_CACHE_DIR/archives/privoxy_3.0.24-1_amd64.deb $BUILD_DIR/.apt/
 
 chmod +x $BUILD_DIR/.apt/usr/sbin/privoxy
 
