@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
+
 echo "Heroku Privoxy Buildpack"
 exit 0

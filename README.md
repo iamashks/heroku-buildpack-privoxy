@@ -14,10 +14,10 @@ Currently will need to provide your own config file if you want anything other t
 
 Create a Heroku app with this buildpack
 ```shell
-heroku create --buildpack "https://github.com/Dannyguk/heroku-privoxy-buildpack.git"
+heroku create --buildpack "https://github.com/iamashks/heroku-buildpack-privoxy.git"
 ```
 Set the buildpack for an existing Heroku app
 
 ```shell
-heroku buildpacks:set https://github.com/Dannyguk/heroku-privoxy-buildpack.git
+heroku buildpacks:set https://github.com/iamashks/heroku-buildpack-privoxy.git
 ```
