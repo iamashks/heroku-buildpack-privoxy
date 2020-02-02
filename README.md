@@ -26,9 +26,5 @@ heroku create --buildpack "https://github.com/iamashks/heroku-buildpack-privoxy.
 $ heroku buildpacks:add https://github.com/iamashks/heroku-buildpack-privoxy.git
 ```
 
-## Features
-
-* Caches compilation
-
 [1]: https://www.privoxy.org/
 [2]: https://devcenter.heroku.com/articles/heroku-cli#getting-started
