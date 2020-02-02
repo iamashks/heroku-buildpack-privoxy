@@ -1,44 +1,89 @@
-# parse and derive params
+#!/usr/bin/env bash
 
-BUILD_DIR=$1
-CACHE_DIR=$2
-ENV_DIR=$3
-BUILDPACK_DIR=`cd $(dirname $0); cd ..; pwd`
+################################################################################
+# Essentials
+################################################################################
 
-LP_DIR=`cd $(dirname $0); cd ..; pwd`
+set -x
 
-function topic() {
-  echo "-----> $*"
+HEROKU_BUILD_DIR="$1"
+HEROKU_CACHE_DIR="$2"
+HEROKU_ENV_DIR="$3"
+
+HEROKU_THIS_DIR=$(dirname "$0")
+HEROKU_PACK_DIR=$(cd "$HEROKU_THIS_DIR"; cd ..; pwd)
+
+# Essental functions
+
+echo_extra() {
+  echo "-----> $*" | indent
 }
 
-function indent() {
-  sed -u 's/^/       /'
+export_env_vars() {
+  env_dir=$1
+  whitelist_regex=${2:-''}
+  blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
+
+  if [ -d "$env_dir" ]; then
+    for e in $(ls "$env_dir"); do
+      echo "$e" | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" &&
+      export "$e=$(cat $env_dir/$e)"
+      :
+    done
+  fi
 }
 
-APT_CACHE_DIR="$CACHE_DIR/apt/cache"
-APT_STATE_DIR="$CACHE_DIR/apt/state"
+indent() {
+  sed -u 's/^/      /'
+}
 
-mkdir -p "$APT_CACHE_DIR/archives/partial"
-mkdir -p "$APT_STATE_DIR/lists/partial"
+# Load env variables
 
-APT_OPTIONS="-o debug::nolocking=true -o dir::cache=$APT_CACHE_DIR -o dir::state=$APT_STATE_DIR"
+export_env_vars "$HEROKU_ENV_DIR"
 
-topic "Installing privoxy"
+################################################################################
+# Variables
+################################################################################
 
-topic "Updating apt caches"
-apt-get $APT_OPTIONS update | indent
+PRIVOXY_COMMAND="run_privoxy"
 
-apt-get $APT_OPTIONS -y --force-yes -d install --reinstall --no-install-recommends privoxy | indent
+APT_CACHE_DIR="${HEROKU_CACHE_DIR}/apt/cache"
+APT_STATE_DIR="${HEROKU_CACHE_DIR}/apt/state"
 
-topic "Installing privoxy"
-dpkg -x $APT_CACHE_DIR/archives/privoxy_*_amd64.deb $BUILD_DIR/.apt/
+################################################################################
+# Download Privoxy
+################################################################################
 
-chmod +x $BUILD_DIR/.apt/usr/sbin/privoxy
+mkdir -p "${APT_CACHE_DIR}/archives/partial"
+mkdir -p "${APT_STATE_DIR}/lists/partial"
 
-topic "Copying in custom config"
-cp $BUILDPACK_DIR/extra/config $BUILD_DIR/.apt/etc/privoxy/
+APT_OPTIONS="-o debug::nolocking=true -o dir::cache=${APT_CACHE_DIR} -o dir::state=${APT_STATE_DIR}"
 
-topic "Installing runner"
-cp $BUILDPACK_DIR/extra/run-privoxy.sh $BUILD_DIR/.profile.d/
-chmod +x $BUILD_DIR/.profile.d/run_privoxy.sh
-topic "Privoxy package installed"
+echo_extra "Updating apt cache"
+apt-get "$APT_OPTIONS" update | indent
+
+echo_extra "Downloading Privoxy"
+apt-get "$APT_OPTIONS" -y --force-yes -d install --reinstall --no-install-recommends privoxy | indent
+
+################################################################################
+# Install Privoxy
+################################################################################
+
+echo_extra "Installing Privoxy"
+dpkg -x ${APT_CACHE_DIR}/archives/privoxy_*_amd64.deb "${HEROKU_BUILD_DIR}/.apt/"
+
+chmod +x "${HEROKU_BUILD_DIR}/.apt/usr/sbin/privoxy"
+
+echo_extra "Copying in custom config"
+cp "${HEROKU_PACK_DIR}/extra/config" "${HEROKU_BUILD_DIR}/.apt/etc/privoxy/"
+
+################################################################################
+# Activate Runner
+################################################################################
+
+echo_extra "Activating the auto-runner"
+
+cp "${HEROKU_PACK_DIR}/extra/${PRIVOXY_COMMAND}.sh" "${HEROKU_BUILD_DIR}/.profile.d/"
+chmod +x "${HEROKU_BUILD_DIR}/.profile.d/${PRIVOXY_COMMAND}.sh"
+
+echo_extra "SUCCESS at installing Privoxy"
