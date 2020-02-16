@@ -70,10 +70,10 @@ mkdir -p "${APT_LIST_DIR}/partial"
 APT_OPTIONS="-o Debug::NoLocking=true -o Dir::Cache=${APT_CACHE_DIR} -o Dir::State:=${APT_STATE_DIR}"
 
 echo_extra "Updating apt cache"
-apt-get "$APT_OPTIONS" update | indent
+apt-get $APT_OPTIONS update | indent
 
 echo_extra "Downloading Privoxy"
-apt-get "$APT_OPTIONS" -y --force-yes -d install --reinstall --no-install-recommends privoxy | indent
+apt-get $APT_OPTIONS -y --force-yes -d install --reinstall --no-install-recommends privoxy | indent
 
 ################################################################################
 # Install Privoxy
