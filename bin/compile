@@ -60,7 +60,7 @@ APT_LIST_DIR="${APT_STATE_DIR}/lists"
 mkdir -p "${APT_ARCHIVE_DIR}/partial"
 mkdir -p "${APT_LIST_DIR}/partial"
 
-APT_OPTIONS="-o Debug::NoLocking=true -o Dir::Cache::Archives=${APT_ARCHIVE_DIR} -o Dir::State::Lists=${APT_LIST_DIR}"
+APT_OPTIONS="-o Debug::NoLocking=true -o Dir::Cache=${APT_CACHE_DIR} -o Dir::State:=${APT_STATE_DIR}"
 
 echo_extra "Updating apt cache"
 apt-get "$APT_OPTIONS" update | indent
