@@ -31,7 +31,8 @@ $ heroku buildpacks:add https://github.com/iamashks/heroku-buildpack-privoxy.git
 You'll need to provide these as env variables ([check this guide][3]):
 
 * `PRIVOXY_PORT`: The port to be used for the Privoxy server (default: 8118).
-* `TOR_PROXY_PORT`: The port to be used for the proxy server (default: 9050).
+* `PRIVOXY_CONF_FILE_URL`: The configuration file for Privoxy (default: supplied).
+* `TOR_PROXY_PORT`: The port to be used for the Tor Proxy server (default: 9050).
 
 ## Features
 

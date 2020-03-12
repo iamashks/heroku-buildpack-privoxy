@@ -45,9 +45,6 @@ indent() {
 
 # Load env variables
 
-echo "BEFORE loading envs"
-echo "AFTER loading envs"
-
 export_env_vars "$HEROKU_ENV_DIR"
 
 ################################################################################
@@ -104,6 +101,12 @@ chmod +x "${HEROKU_BUILD_DIR}/.apt/usr/sbin/privoxy"
 echo_extra "Configuring Privoxy"
 
 cp "${HEROKU_PACK_DIR}/extra/config" "${HEROKU_BUILD_DIR}/.apt/etc/privoxy/"
+
+if [ -n "$PRIVOXY_CONF_FILE_URL" ]; then
+    wget "$PRIVOXY_CONF_FILE_URL" -O "${HEROKU_BUILD_DIR}/.apt/etc/privoxy/config_custom"
+
+    PRIVOXY_CONFIG_FILE="${PRIVOXY_CONFIG_FILE}_custom"
+fi
 
 cat >>"${HEROKU_BUILD_DIR}/.apt/usr/bin/${PRIVOXY_COMMAND}" <<EOF
 #!/usr/bin/env bash
