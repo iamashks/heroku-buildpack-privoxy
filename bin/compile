@@ -64,11 +64,11 @@ APT_ARCHIVE_DIR="${APT_CACHE_DIR}/archives"
 APT_LIST_DIR="${APT_STATE_DIR}/lists"
 
 if [ -z "$TOR_PROXY_PORT" ]; then
-  TOR_PROXY_PORT="9050"
+    TOR_PROXY_PORT="9050"
 fi
 
 if [ -z "$PRIVOXY_PORT" ]; then
-  PRIVOXY_PORT="8118"
+    PRIVOXY_PORT="8118"
 fi
 
 ################################################################################
@@ -105,14 +105,28 @@ echo_extra "Configuring Privoxy"
 
 cp "${HEROKU_PACK_DIR}/extra/config" "${HEROKU_BUILD_DIR}/.apt/etc/privoxy/"
 
-cat >> "${HEROKU_BUILD_DIR}/.apt/usr/bin/${PRIVOXY_COMMAND}" <<EOF
+cat >>"${HEROKU_BUILD_DIR}/.apt/usr/bin/${PRIVOXY_COMMAND}" <<EOF
 #!/usr/bin/env bash
 
-echo "confdir ${HOME}/.apt/etc/privoxy" >> ${PRIVOXY_CONFIG_FILE}
-echo "forward-socks5 / localhost:${TOR_PROXY_PORT} ." >> ${PRIVOXY_CONFIG_FILE}
-echo "listen-address  0.0.0.0:${PRIVOXY_PORT}" >> ${PRIVOXY_CONFIG_FILE}
-echo "logdir ${HOME}/.apt/var/log/privoxy" >> ${PRIVOXY_CONFIG_FILE}
-echo "user-manual ${HOME}/.apt/usr/share/doc/privoxy/user-manual" >> ${PRIVOXY_CONFIG_FILE}
+if ! $(grep -q "confdir ${HOME}/.apt/etc/privoxy" ${PRIVOXY_CONFIG_FILE}); then
+  echo "confdir ${HOME}/.apt/etc/privoxy" >> ${PRIVOXY_CONFIG_FILE}
+fi
+
+if ! $(grep -q "forward-socks5 / localhost:${TOR_PROXY_PORT} ." ${PRIVOXY_CONFIG_FILE}); then
+  echo "forward-socks5 / localhost:${TOR_PROXY_PORT} ." >> ${PRIVOXY_CONFIG_FILE}
+fi
+
+if ! $(grep -q "listen-address  0.0.0.0:${PRIVOXY_PORT}" ${PRIVOXY_CONFIG_FILE}); then
+  echo "listen-address  0.0.0.0:${PRIVOXY_PORT}" >> ${PRIVOXY_CONFIG_FILE}
+fi
+
+if ! $(grep -q "logdir ${HOME}/.apt/var/log/privoxy" ${PRIVOXY_CONFIG_FILE}); then
+  echo "logdir ${HOME}/.apt/var/log/privoxy" >> ${PRIVOXY_CONFIG_FILE}
+fi
+
+if ! $(grep -q "user-manual ${HOME}/.apt/usr/share/doc/privoxy/user-manual" ${PRIVOXY_CONFIG_FILE}); then
+  echo "user-manual ${HOME}/.apt/usr/share/doc/privoxy/user-manual" >> ${PRIVOXY_CONFIG_FILE}
+fi
 
 ${HOME}/.apt/usr/sbin/privoxy ${HOME}/.apt/etc/privoxy/config
 exec \$*
@@ -127,7 +141,7 @@ chmod a+x "${HEROKU_BUILD_DIR}/.apt/usr/bin/${PRIVOXY_COMMAND}"
 echo_extra "Activating the auto-runner"
 
 if [ ! -d "${HEROKU_BUILD_DIR}/.profile.d/" ]; then
-  mkdir "${HEROKU_BUILD_DIR}/.profile.d/"
+    mkdir "${HEROKU_BUILD_DIR}/.profile.d/"
 fi
 
 cp "${HEROKU_PACK_DIR}/extra/${PRIVOXY_COMMAND}.sh" "${HEROKU_BUILD_DIR}/.profile.d/"
