@@ -45,14 +45,10 @@ indent() {
 
 # Load env variables
 
-env
-
 echo "BEFORE loading envs"
 echo "AFTER loading envs"
 
 export_env_vars "$HEROKU_ENV_DIR"
-
-env
 
 ################################################################################
 # Variables
