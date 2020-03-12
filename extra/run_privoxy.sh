@@ -1,3 +1,3 @@
 #!/bin/bash
 
-/app/.apt/usr/sbin/privoxy /app/.apt/etc/privoxy/config
+/app/.apt/usr/bin/run_privoxy

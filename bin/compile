@@ -11,30 +11,36 @@ HEROKU_CACHE_DIR="$2"
 HEROKU_ENV_DIR="$3"
 
 HEROKU_THIS_DIR=$(dirname "$0")
-HEROKU_PACK_DIR=$(cd "$HEROKU_THIS_DIR"; cd ..; pwd)
+HEROKU_PACK_DIR=$(
+    # shellcheck disable=SC2164
+    cd "$HEROKU_THIS_DIR"
+    cd ..
+    pwd
+)
 
 # Essental functions
 
 echo_extra() {
-  echo "-----> $*" | indent
+    echo "-----> $*" | indent
 }
 
 export_env_vars() {
-  env_dir=$1
-  whitelist_regex=${2:-''}
-  blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
+    env_dir=$1
+    whitelist_regex=${2:-''}
+    blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
 
-  if [ -d "$env_dir" ]; then
-    for e in $(ls "$env_dir"); do
-      echo "$e" | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" &&
-      export "$e=$(cat $env_dir/$e)"
-      :
-    done
-  fi
+    if [ -d "$env_dir" ]; then
+        # shellcheck disable=SC2045
+        for e in $(ls "$env_dir"); do
+            # shellcheck disable=SC2086
+            echo "$e" | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" && export "$e=$(cat $env_dir/$e)"
+            :
+        done
+    fi
 }
 
 indent() {
-  sed -u 's/^/      /'
+    sed -u 's/^/      /'
 }
 
 # Load env variables
@@ -82,12 +88,29 @@ apt-get $APT_OPTIONS -y --force-yes -d install --reinstall --no-install-recommen
 ################################################################################
 
 echo_extra "Installing Privoxy"
-dpkg -x ${APT_ARCHIVE_DIR}/privoxy_*_amd64.deb "${HEROKU_BUILD_DIR}/.apt/"
+dpkg -x "${APT_ARCHIVE_DIR}/privoxy_*_amd64.deb" "${HEROKU_BUILD_DIR}/.apt/"
 
 chmod +x "${HEROKU_BUILD_DIR}/.apt/usr/sbin/privoxy"
 
 echo_extra "Copying in custom config"
 cp "${HEROKU_PACK_DIR}/extra/config" "${HEROKU_BUILD_DIR}/.apt/etc/privoxy/"
+
+cat >>"${HEROKU_BUILD_DIR}/.apt/usr/bin/${PRIVOXY_COMMAND}" <<EOF
+#!/usr/bin/env bash
+
+echo "Setting up the control server"
+
+if grep -q "SOCKSPort ${TOR_PROXY_PORT}" "${HOME}/.apt/etc/privoxy/config"; then
+  echo "The configuration is already there, so skipping to write..."
+else
+  echo "SOCKSPort ${TOR_PROXY_PORT}" >> "${HOME}/.apt/etc/privoxy/config"
+  echo "ControlPort ${TOR_CONTROL_PORT}" >> "${HOME}/.apt/etc/privoxy/config"
+  echo "HashedControlPassword ${TOR_HASHED_PASS}" >> "${HOME}/.apt/etc/privoxy/config"
+fi
+
+"${HOME}/.apt/usr/sbin/privoxy" "${HOME}/.apt/etc/privoxy/config"
+exec \$*
+EOF
 
 ################################################################################
 # Activate Runner
