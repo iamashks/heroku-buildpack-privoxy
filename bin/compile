@@ -108,23 +108,23 @@ cp "${HEROKU_PACK_DIR}/extra/config" "${HEROKU_BUILD_DIR}/.apt/etc/privoxy/"
 cat >>"${HEROKU_BUILD_DIR}/.apt/usr/bin/${PRIVOXY_COMMAND}" <<EOF
 #!/usr/bin/env bash
 
-if ! $(grep -q "confdir ${HOME}/.apt/etc/privoxy" ${PRIVOXY_CONFIG_FILE}); then
+if ! grep -q "confdir ${HOME}/.apt/etc/privoxy" ${PRIVOXY_CONFIG_FILE}; then
   echo "confdir ${HOME}/.apt/etc/privoxy" >> ${PRIVOXY_CONFIG_FILE}
 fi
 
-if ! $(grep -q "forward-socks5 / localhost:${TOR_PROXY_PORT} ." ${PRIVOXY_CONFIG_FILE}); then
+if ! grep -q "forward-socks5 / localhost:${TOR_PROXY_PORT} ." ${PRIVOXY_CONFIG_FILE}; then
   echo "forward-socks5 / localhost:${TOR_PROXY_PORT} ." >> ${PRIVOXY_CONFIG_FILE}
 fi
 
-if ! $(grep -q "listen-address  0.0.0.0:${PRIVOXY_PORT}" ${PRIVOXY_CONFIG_FILE}); then
+if ! grep -q "listen-address  0.0.0.0:${PRIVOXY_PORT}" ${PRIVOXY_CONFIG_FILE}; then
   echo "listen-address  0.0.0.0:${PRIVOXY_PORT}" >> ${PRIVOXY_CONFIG_FILE}
 fi
 
-if ! $(grep -q "logdir ${HOME}/.apt/var/log/privoxy" ${PRIVOXY_CONFIG_FILE}); then
+if ! grep -q "logdir ${HOME}/.apt/var/log/privoxy" ${PRIVOXY_CONFIG_FILE}; then
   echo "logdir ${HOME}/.apt/var/log/privoxy" >> ${PRIVOXY_CONFIG_FILE}
 fi
 
-if ! $(grep -q "user-manual ${HOME}/.apt/usr/share/doc/privoxy/user-manual" ${PRIVOXY_CONFIG_FILE}); then
+if ! grep -q "user-manual ${HOME}/.apt/usr/share/doc/privoxy/user-manual" ${PRIVOXY_CONFIG_FILE}; then
   echo "user-manual ${HOME}/.apt/usr/share/doc/privoxy/user-manual" >> ${PRIVOXY_CONFIG_FILE}
 fi
 
