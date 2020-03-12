@@ -95,7 +95,7 @@ chmod +x "${HEROKU_BUILD_DIR}/.apt/usr/sbin/privoxy"
 echo_extra "Copying in custom config"
 cp "${HEROKU_PACK_DIR}/extra/config" "${HEROKU_BUILD_DIR}/.apt/etc/privoxy/"
 
-cat >>"${HEROKU_BUILD_DIR}/.apt/usr/bin/${PRIVOXY_COMMAND}" <<EOF
+cat >> "${HEROKU_BUILD_DIR}/.apt/usr/bin/${PRIVOXY_COMMAND}" <<EOF
 #!/usr/bin/env bash
 
 echo "Setting up the control server"
@@ -108,9 +108,11 @@ else
   echo "HashedControlPassword ${TOR_HASHED_PASS}" >> "${HOME}/.apt/etc/privoxy/config"
 fi
 
-"${HOME}/.apt/usr/sbin/privoxy" "${HOME}/.apt/etc/privoxy/config"
+${HOME}/.apt/usr/sbin/privoxy ${HOME}/.apt/etc/privoxy/config
 exec \$*
 EOF
+
+chmod a+x "${HEROKU_BUILD_DIR}/.apt/usr/bin/${PRIVOXY_COMMAND}"
 
 ################################################################################
 # Activate Runner
