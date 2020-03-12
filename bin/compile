@@ -116,6 +116,10 @@ chmod a+x "${HEROKU_BUILD_DIR}/.apt/usr/bin/${PRIVOXY_COMMAND}"
 
 echo_extra "Activating the auto-runner"
 
+if [ ! -d "${HEROKU_BUILD_DIR}/.profile.d/" ]; then
+  mkdir "${HEROKU_BUILD_DIR}/.profile.d/"
+fi
+
 cp "${HEROKU_PACK_DIR}/extra/${PRIVOXY_COMMAND}.sh" "${HEROKU_BUILD_DIR}/.profile.d/"
 chmod +x "${HEROKU_BUILD_DIR}/.profile.d/${PRIVOXY_COMMAND}.sh"
 
