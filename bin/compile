@@ -88,7 +88,7 @@ apt-get $APT_OPTIONS -y --force-yes -d install --reinstall --no-install-recommen
 ################################################################################
 
 echo_extra "Installing Privoxy"
-dpkg -x "${APT_ARCHIVE_DIR}/privoxy_*_amd64.deb" "${HEROKU_BUILD_DIR}/.apt/"
+dpkg -x "${APT_ARCHIVE_DIR}"/privoxy_*_amd64.deb "${HEROKU_BUILD_DIR}/.apt/"
 
 chmod +x "${HEROKU_BUILD_DIR}/.apt/usr/sbin/privoxy"
 
