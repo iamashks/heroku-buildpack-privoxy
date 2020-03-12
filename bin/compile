@@ -55,12 +55,21 @@ export_env_vars "$HEROKU_ENV_DIR"
 ################################################################################
 
 PRIVOXY_COMMAND="run_privoxy"
+PRIVOXY_CONFIG_FILE="${HOME}/.apt/etc/privoxy/config"
 
 APT_CACHE_DIR="${HEROKU_CACHE_DIR}/apt/cache"
 APT_STATE_DIR="${HEROKU_CACHE_DIR}/apt/state"
 
 APT_ARCHIVE_DIR="${APT_CACHE_DIR}/archives"
 APT_LIST_DIR="${APT_STATE_DIR}/lists"
+
+if [ -z "$TOR_PROXY_PORT" ]; then
+  TOR_PROXY_PORT="9050"
+fi
+
+if [ -z "$PRIVOXY_PORT" ]; then
+  PRIVOXY_PORT="8118"
+fi
 
 ################################################################################
 # Download Privoxy
@@ -88,20 +97,25 @@ dpkg -x "${APT_ARCHIVE_DIR}"/privoxy_*_amd64.deb "${HEROKU_BUILD_DIR}/.apt/"
 
 chmod +x "${HEROKU_BUILD_DIR}/.apt/usr/sbin/privoxy"
 
-echo_extra "Copying in custom config"
+################################################################################
+# Configure Privoxy
+################################################################################
+
+echo_extra "Configuring Privoxy"
+
 cp "${HEROKU_PACK_DIR}/extra/config" "${HEROKU_BUILD_DIR}/.apt/etc/privoxy/"
 
 cat >> "${HEROKU_BUILD_DIR}/.apt/usr/bin/${PRIVOXY_COMMAND}" <<EOF
 #!/usr/bin/env bash
 
-echo "Setting up the control server"
-
-if grep -q "SOCKSPort ${TOR_PROXY_PORT}" "${HOME}/.apt/etc/privoxy/config"; then
+if grep -q "confdir ${HOME}/.apt/etc/privoxy" ${PRIVOXY_CONFIG_FILE}; then
   echo "The configuration is already there, so skipping to write..."
 else
-  echo "SOCKSPort ${TOR_PROXY_PORT}" >> "${HOME}/.apt/etc/privoxy/config"
-  echo "ControlPort ${TOR_CONTROL_PORT}" >> "${HOME}/.apt/etc/privoxy/config"
-  echo "HashedControlPassword ${TOR_HASHED_PASS}" >> "${HOME}/.apt/etc/privoxy/config"
+  echo "confdir ${HOME}/.apt/etc/privoxy" >> ${PRIVOXY_CONFIG_FILE}
+  echo "forward-socks5 / localhost:${TOR_PROXY_PORT} ." >> ${PRIVOXY_CONFIG_FILE}
+  echo "listen-address  0.0.0.0:${PRIVOXY_PORT}" >> ${PRIVOXY_CONFIG_FILE}
+  echo "logdir ${HOME}/.apt/var/log/privoxy" >> ${PRIVOXY_CONFIG_FILE}
+  echo "user-manual ${HOME}/.apt/usr/share/doc/privoxy/user-manual" >> ${PRIVOXY_CONFIG_FILE}
 fi
 
 ${HOME}/.apt/usr/sbin/privoxy ${HOME}/.apt/etc/privoxy/config

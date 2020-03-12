@@ -26,5 +26,17 @@ heroku create --buildpack "https://github.com/iamashks/heroku-buildpack-privoxy.
 $ heroku buildpacks:add https://github.com/iamashks/heroku-buildpack-privoxy.git
 ```
 
+## Variables
+
+You'll need to provide these as env variables ([check this guide][3]):
+
+* `PRIVOXY_PORT`: The port to be used for the Privoxy server (default: 8118).
+* `TOR_PROXY_PORT`: The port to be used for the proxy server (default: 9050).
+
+## Features
+
+* Caches compilation
+
 [1]: https://www.privoxy.org/
 [2]: https://devcenter.heroku.com/articles/heroku-cli#getting-started
+[3]: https://devcenter.heroku.com/articles/config-vars#using-the-heroku-dashboard
